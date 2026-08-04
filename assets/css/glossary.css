@@ -1,0 +1,157 @@
+/*
+ * Thuật ngữ được đánh dấu trong bài viết, và trang từ điển.
+ *
+ * Hộp giải nghĩa hiện bằng CSS thuần khi di chuột hoặc khi con trỏ bàn phím
+ * chạm tới. Không dùng JavaScript: thuật ngữ vốn đã là một liên kết dẫn sang
+ * trang giải nghĩa đầy đủ, nên hộp này chỉ là tiện ích thêm — hỏng cũng không
+ * ai mất gì.
+ */
+
+.dql-tn {
+	position: relative;
+	display: inline;
+}
+
+.dql-tn__tu {
+	color: inherit;
+	text-decoration: none;
+	/* Gạch chân đứt nét: đủ để nhận ra là có gì đó, nhưng không rối như liên
+	   kết thường — bài viết có 8 thuật ngữ mà gạch chân liền thì trông như
+	   một trang toàn liên kết. */
+	border-bottom: 1px dashed var(--global-palette6, #7E93AE);
+}
+
+.dql-tn__tu:hover {
+	border-bottom-color: var(--global-palette1, #2563AC);
+	color: var(--global-palette1, #2563AC);
+}
+
+.dql-tn__giai {
+	position: absolute;
+	left: 0;
+	bottom: calc(100% + 8px);
+	z-index: 20;
+	width: max-content;
+	max-width: min(22rem, 80vw);
+	background: var(--global-palette3, #16203A);
+	color: #fff;
+	border-radius: 8px;
+	padding: 0.7rem 0.9rem;
+	font-size: 0.85rem;
+	line-height: 1.55;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.dql-tn__giai strong {
+	display: block;
+	margin-bottom: 0.2rem;
+	color: #fff;
+}
+
+.dql-tn:hover .dql-tn__giai,
+.dql-tn:focus-within .dql-tn__giai {
+	opacity: 1;
+	visibility: visible;
+}
+
+/* Gần mép phải màn hình thì hộp bị tràn ra ngoài. Không có JavaScript đo vị
+   trí, nên trên màn hình hẹp ta neo hộp theo mép trái vùng đọc thay vì theo
+   từ — kém chính xác hơn nhưng không bao giờ tràn. */
+@media (max-width: 640px) {
+	.dql-tn__giai {
+		position: fixed;
+		left: 1rem;
+		right: 1rem;
+		bottom: 1rem;
+		width: auto;
+		max-width: none;
+	}
+}
+
+/* ---------------------------------------------------------------------------
+ * Trang từ điển
+ * ------------------------------------------------------------------------- */
+
+.dql-tudien__tieude {
+	margin: 0 0 0.5rem;
+}
+
+.dql-tudien__mota {
+	margin: 0 0 2rem;
+	color: var(--global-palette5, #5A6478);
+	line-height: 1.7;
+}
+
+.dql-tudien__chumuc {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin: 0 0 2rem;
+	padding: 0;
+	list-style: none;
+}
+
+.dql-tudien__chumuc a,
+.dql-tudien__chumuc span {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2rem;
+	height: 2rem;
+	padding: 0 0.4rem;
+	border: 1px solid var(--global-palette7, #EEF2F8);
+	border-radius: 6px;
+	font-size: 0.9rem;
+	text-decoration: none;
+	color: var(--global-palette1, #2563AC);
+}
+
+.dql-tudien__chumuc span {
+	color: var(--global-palette6, #7E93AE);
+	opacity: 0.5;
+}
+
+.dql-tudien__chumuc a:hover {
+	border-color: var(--global-palette1, #2563AC);
+}
+
+.dql-tudien__nhom {
+	margin-bottom: 2.5rem;
+	scroll-margin-top: 100px;
+}
+
+.dql-tudien__chu {
+	font-size: 1.5rem;
+	color: var(--global-palette1, #2563AC);
+	margin: 0 0 0.75rem;
+	padding-bottom: 0.4rem;
+	border-bottom: 1px solid var(--global-palette7, #EEF2F8);
+}
+
+.dql-tudien__muc {
+	margin-bottom: 1.25rem;
+}
+
+.dql-tudien__tu {
+	font-size: 1.05rem;
+	font-weight: 500;
+	margin: 0 0 0.2rem;
+}
+
+.dql-tudien__tu a {
+	color: var(--global-palette3, #16203A);
+	text-decoration: none;
+}
+
+.dql-tudien__tu a:hover {
+	color: var(--global-palette1, #2563AC);
+}
+
+.dql-tudien__nghia {
+	margin: 0;
+	font-size: 0.95rem;
+	line-height: 1.7;
+	color: var(--global-palette5, #5A6478);
+}

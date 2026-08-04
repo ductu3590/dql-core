@@ -1,0 +1,17 @@
+# Rác của hệ điều hành và trình soạn thảo
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.sublime-*
+
+# File tạm khi sửa
+*.bak
+*.orig
+*.rej
+*~
+*.log
+
+# Không có bước build. Mọi file còn lại ĐỀU được đẩy lên production,
+# vì WP Pusher chép nguyên repo thành thư mục plugin.

@@ -1,0 +1,276 @@
+/*
+ * Công cụ tra đá hợp mệnh.
+ *
+ * Dùng biến --global-palette* của theme khi có, và có giá trị dự phòng cho
+ * trường hợp chạy với theme khác. Plugin phải sống được độc lập với theme —
+ * đó là lý do nó là plugin.
+ */
+
+.dql-menh-tool {
+	--dql-menh-nhan: var(--global-palette1, #2563AC);
+	--dql-menh-dam: var(--global-palette2, #0F2E5F);
+	--dql-menh-chu: var(--global-palette4, #3D4759);
+	--dql-menh-nhat: var(--global-palette6, #7E93AE);
+	--dql-menh-vien: var(--global-palette7, #EEF2F8);
+	--dql-menh-nen: var(--global-palette9, #FFFFFF);
+
+	/* Ô nhập tách riêng khỏi --dql-menh-nen: theme đặt dải nền tối cần đổi màu
+	   chữ trong ô cho khớp nền ô, mà không kéo theo mọi thứ khác dùng nền. */
+	--dql-menh-o-nen: var(--dql-menh-nen);
+	--dql-menh-o-chu: var(--dql-menh-dam);
+
+	scroll-margin-top: 100px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Form nhập năm sinh
+ * ------------------------------------------------------------------------- */
+
+.dql-menh-form__label {
+	display: block;
+	font-size: 0.85rem;
+	color: var(--dql-menh-nhat);
+	margin-bottom: 0.4rem;
+}
+
+/* Giới hạn bề ngang của form: khi có kết quả, công cụ trải hết chiều ngang dải
+   xanh, nhưng một ô nhập bốn chữ số dài 1100px thì lố. */
+.dql-menh-form {
+	max-width: 30rem;
+}
+
+.dql-menh-form__row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+/*
+ * Bộ chọn cố tình dài: kèm cả thẻ input và lớp bao ngoài.
+ *
+ * Theme thường có sẵn một dòng kiểu `input[type="number"] { … }` — Kadence có
+ * — và nó mạnh hơn một lớp đơn, nên bản `.dql-menh-form__input` trần bị đè mất
+ * nền, viền lẫn bo góc. Hậu quả đã gặp thật: nền ô bị theme kéo về trắng trong
+ * khi chữ vẫn là trắng của dải nền tối, năm sinh gõ xong nhìn như biến mất.
+ */
+.dql-menh-tool input.dql-menh-form__input {
+	flex: 1 1 8rem;
+	min-width: 0;
+	border: 1px solid var(--dql-menh-vien);
+	border-radius: 8px;
+	background: var(--dql-menh-o-nen);
+	padding: 0.65rem 0.9rem;
+	font-size: 1rem;
+	font-family: inherit;
+	color: var(--dql-menh-o-chu);
+}
+
+.dql-menh-tool input.dql-menh-form__input:focus {
+	outline: 2px solid var(--dql-menh-nhan);
+	outline-offset: 1px;
+	border-color: transparent;
+	background: var(--dql-menh-o-nen);
+	color: var(--dql-menh-o-chu);
+}
+
+.dql-menh-form__submit {
+	flex: none;
+	border: 0;
+	border-radius: 8px;
+	background: var(--dql-menh-nhan);
+	color: #fff;
+	font-family: inherit;
+	font-size: 0.95rem;
+	font-weight: 500;
+	padding: 0.65rem 1.4rem;
+	cursor: pointer;
+	transition: background-color 0.18s ease;
+}
+
+.dql-menh-form__submit:hover {
+	background: var(--dql-menh-dam);
+}
+
+.dql-menh-loi {
+	margin: 0.75rem 0 0;
+	font-size: 0.9rem;
+	color: var(--global-palette13, #B82105);
+}
+
+/* ---------------------------------------------------------------------------
+ * Khối kết quả
+ * ------------------------------------------------------------------------- */
+
+.dql-menh-ketqua {
+	margin-top: 1.4rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--dql-menh-vien);
+}
+
+/* Dòng tóm tắt: tên mệnh bên trái, liên kết đọc sâu đẩy sang phải khi còn chỗ.
+   Hai thứ này là phần người dùng đọc đầu tiên và bấm cuối cùng — để cùng một
+   hàng thì mắt không phải đi hết khối rồi quay lại. */
+.dql-menh-ketqua__dau {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.4rem 1.5rem;
+}
+
+.dql-menh-ketqua__menh {
+	margin: 0;
+	font-size: 1.25rem;
+	line-height: 1.35;
+	color: var(--dql-menh-dam);
+}
+
+.dql-menh-ketqua__nam,
+.dql-menh-ketqua__ten {
+	font-weight: 600;
+}
+
+.dql-menh-ketqua__canchi {
+	margin: 0.15rem 0 0;
+	font-size: 0.85rem;
+	color: var(--dql-menh-nhat);
+}
+
+/* Lưới thông tin.
+ *
+ * Mặc định một cột cho điện thoại. Từ 48em trở lên: hai khối màu xếp chồng ở
+ * cột hẹp bên trái, danh sách đá — phần dài nhất — chiếm cột rộng bên phải.
+ * Nhờ vậy khối kết quả thấp đi khoảng một nửa so với bản xếp dọc.
+ */
+.dql-menh-ketqua__luoi {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1.1rem 2.5rem;
+	margin-top: 1.1rem;
+	align-items: start;
+}
+
+.dql-menh-ketqua__cot {
+	display: grid;
+	gap: 1.1rem;
+	align-content: start;
+}
+
+@media (min-width: 48em) {
+	.dql-menh-ketqua__luoi {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+	}
+
+	/* Thiếu dữ liệu màu hoặc thiếu dữ liệu đá thì phần còn lại trải hết hàng,
+	   thay vì co vào một cột và chừa nửa hàng trống. */
+	.dql-menh-ketqua__luoi > :only-child {
+		grid-column: 1 / -1;
+	}
+}
+
+.dql-menh-khoi__tieude {
+	margin: 0 0 0.4rem;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--dql-menh-nhat);
+}
+
+.dql-menh-mau {
+	margin: 0;
+	font-size: 0.95rem;
+	color: var(--dql-menh-chu);
+}
+
+.dql-menh-da {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dql-menh-da li {
+	margin: 0;
+}
+
+.dql-menh-da a,
+.dql-menh-da li {
+	display: inline-block;
+	border: 1px solid var(--dql-menh-vien);
+	border-radius: 999px;
+	padding: 0.3rem 0.8rem;
+	font-size: 0.88rem;
+	color: var(--dql-menh-chu);
+	text-decoration: none;
+	transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+/* Tên đá chưa có bài viết thì li tự mang khung; có bài thì khung nằm ở thẻ a
+   để cả vùng bấm được. Bỏ khung lồng nhau ở trường hợp thứ hai. */
+.dql-menh-da li:has(a) {
+	border: 0;
+	padding: 0;
+}
+
+.dql-menh-da a:hover {
+	border-color: var(--dql-menh-nhan);
+	color: var(--dql-menh-nhan);
+}
+
+.dql-menh-mau--ky {
+	color: var(--dql-menh-nhat);
+}
+
+.dql-menh-da__mau {
+	color: var(--dql-menh-nhat);
+	font-size: 0.85em;
+}
+
+.dql-menh-ghichu {
+	margin: 0.7rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.82rem;
+	line-height: 1.6;
+	color: var(--dql-menh-nhat);
+}
+
+.dql-menh-ghichu li {
+	margin: 0 0 0.3rem;
+}
+
+.dql-menh-ghichu strong {
+	color: var(--dql-menh-chu);
+	font-weight: 500;
+}
+
+.dql-menh-bai {
+	flex: none;
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: var(--dql-menh-nhan);
+	text-decoration: none;
+	border-bottom: 1px solid currentColor;
+}
+
+.dql-menh-bai:hover {
+	color: var(--dql-menh-dam);
+}
+
+.dql-menh-luuy strong {
+	color: var(--dql-menh-chu);
+	font-weight: 600;
+}
+
+.dql-menh-luuy {
+	margin: 1.1rem 0 0;
+	padding-top: 0.8rem;
+	border-top: 1px solid var(--dql-menh-vien);
+	font-size: 0.78rem;
+	line-height: 1.55;
+	color: var(--dql-menh-nhat);
+	max-width: 62em;
+}
