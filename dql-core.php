@@ -3,7 +3,7 @@
  * Plugin Name: Đá Quý Lục Yên — Lõi
  * Plugin URI:  https://daquylucyen.net.vn
  * Description: Dữ liệu và công cụ riêng của daquylucyen.net.vn: tra đá hợp mệnh theo năm sinh, từ điển thuật ngữ đá quý, đếm lượt xem bài viết.
- * Version:     1.1.0
+ * Version:     1.1.1
  * Author:      daquylucyen.net.vn
  * License:     GPL-2.0-or-later
  * Text Domain: dql-core
@@ -25,7 +25,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DQL_CORE_VERSION', '1.1.0' );
+define( 'DQL_CORE_VERSION', '1.1.1' );
 define( 'DQL_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DQL_CORE_URL', plugin_dir_url( __FILE__ ) );
 
