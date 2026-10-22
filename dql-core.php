@@ -3,7 +3,7 @@
  * Plugin Name: Đá Quý Lục Yên — Lõi
  * Plugin URI:  https://daquylucyen.net.vn
  * Description: Dữ liệu và công cụ riêng của daquylucyen.net.vn: tra đá hợp mệnh theo năm sinh, từ điển thuật ngữ đá quý, đếm lượt xem bài viết.
- * Version:     1.1.1
+ * Version:     1.2.0
  * Author:      daquylucyen.net.vn
  * License:     GPL-2.0-or-later
  * Text Domain: dql-core
@@ -25,7 +25,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DQL_CORE_VERSION', '1.1.1' );
+define( 'DQL_CORE_VERSION', '1.2.0' );
 define( 'DQL_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DQL_CORE_URL', plugin_dir_url( __FILE__ ) );
 
@@ -33,6 +33,17 @@ require_once DQL_CORE_DIR . 'includes/class-dql-menh.php';
 require_once DQL_CORE_DIR . 'includes/class-dql-menh-tool.php';
 require_once DQL_CORE_DIR . 'includes/class-dql-glossary.php';
 require_once DQL_CORE_DIR . 'includes/class-dql-luot-xem.php';
+require_once DQL_CORE_DIR . 'includes/class-dql-rest-https.php';
+
+/*
+ * Ép HTTPS cho REST API — chạy ngay, không chờ hook.
+ *
+ * Mọi thứ khác trong plugin này khởi động ở plugins_loaded. Riêng việc này
+ * phải xong sớm nhất có thể: nó quyết định request có được đi tiếp hay bị
+ * trả về, nên càng ít code chạy trước nó càng tốt. Hàm tự kiểm tra điều
+ * kiện và không làm gì cả với request thường.
+ */
+DQL_Rest_Https::ep_https();
 
 /**
  * Khởi động plugin.
