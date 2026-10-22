@@ -23,6 +23,18 @@
  * mật khóa, nên đặt ở đây để còn theo WP Pusher mà lên. Ngày nào thêm được rule
  * vào .htaccess thì đoạn này thành lớp dự phòng — cứ để nguyên, không hại gì.
  *
+ * CHẠY Ở plugins_loaded, KHÔNG CHẠY LÚC NẠP PLUGIN
+ *
+ * Bản 1.2.0 gọi thẳng lúc nạp plugin cho sớm, và nhận 500 trên production.
+ * wp_safe_redirect() nằm trong wp-includes/pluggable.php, mà WordPress nạp file
+ * đó SAU khi include các plugin — chính là để plugin có cơ hội định nghĩa đè lên.
+ * Gọi lúc nạp plugin là gọi hàm chưa tồn tại: fatal error.
+ *
+ * pluggable.php được nạp xong trước khi plugins_loaded chạy, nên hook vào đó với
+ * priority 0 là sớm nhất mà vẫn an toàn — và vẫn còn rất xa mới tới lúc REST
+ * dispatch hay xác thực người gửi. Có thêm lớp dự phòng gọi header() nếu
+ * wp_safe_redirect() vắng mặt, để cái bẫy này không bao giờ thành 500 lần nữa.
+ *
  * VÌ SAO 308 CHỨ KHÔNG PHẢI 301
  *
  * 301 cho phép client đổi POST thành GET khi đi theo redirect, mất luôn nội dung
@@ -41,10 +53,14 @@ defined( 'ABSPATH' ) || exit;
 class DQL_Rest_Https {
 
 	/**
+	 * Gắn hook.
+	 */
+	public static function init() {
+		add_action( 'plugins_loaded', array( __CLASS__, 'ep_https' ), 0 );
+	}
+
+	/**
 	 * Kiểm tra và chuyển hướng nếu request REST đang đi bằng HTTP.
-	 *
-	 * Gọi thẳng lúc nạp plugin, không gắn vào hook nào: việc này phải xong
-	 * trước khi có ai đó kịp hỏi "người gửi request này là ai".
 	 */
 	public static function ep_https() {
 		if ( ! self::la_request_rest() ) {
@@ -72,7 +88,17 @@ class DQL_Rest_Https {
 			? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) )
 			: 'GET';
 
-		wp_safe_redirect( $dich, in_array( $method, array( 'GET', 'HEAD' ), true ) ? 301 : 308 );
+		$ma = in_array( $method, array( 'GET', 'HEAD' ), true ) ? 301 : 308;
+
+		// Địa chỉ đích đã dựng từ home_url() nên tự nó đã an toàn; dùng
+		// wp_safe_redirect() khi có để còn tôn trọng filter wp_redirect, và rơi
+		// về header() nếu chạy sớm hơn lúc pluggable.php được nạp.
+		if ( function_exists( 'wp_safe_redirect' ) ) {
+			wp_safe_redirect( $dich, $ma );
+		} else {
+			header( 'Location: ' . $dich, true, $ma );
+		}
+
 		exit;
 	}
 
